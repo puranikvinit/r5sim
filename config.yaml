@@ -1,0 +1,19 @@
+cpu:
+  register_file_length: 32
+  register_file_width: 32
+  pipeline_stages: 5 # 3,4,5,7
+
+memory:
+  l1_icache_size: 128 # in KiB
+  l1_dcache_size: 128 # in KiB
+  l2_cache_size: 1024 # in KiB
+  dram_size: 4096 # in MiB
+
+enable_stats:
+  cache_misses: 1 # 0,1
+  branch_mispredictions: 1 # 0,1
+  memory_heatmap: 0 # 0,1
+  register_heatmap: 0 #0,1
+
+logs:
+  verbosity_level: "ERROR"
