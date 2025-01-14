@@ -4,4 +4,4 @@ A basic RISC-V Instruction Set Simulator
 
 Dependencies:
 
-- libyaml
+- libyaml v0.2.5

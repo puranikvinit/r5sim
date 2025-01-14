@@ -13,7 +13,7 @@ enable_stats:
   cache_misses: 1 # 0,1
   branch_mispredictions: 1 # 0,1
   memory_heatmap: 0 # 0,1
-  register_heatmap: 0 #0,1
+  register_heatmap: 0 # 0,1
 
 logs:
-  verbosity_level: "ERROR"
+  verbosity_level: 3 # 0->INFO, 1->DEBUG, 2->WARN, 3->ERROR
