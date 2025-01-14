@@ -1,7 +1,5 @@
-LLVM_PATH = /opt/homebrew/opt/llvm/bin/
-CLANG_FLAGS = -Wall -g -O2 -ffreestanding -Iinclude/ -I /opt/homebrew/Cellar/llvm/18.1.6/lib/clang/18/include/
+mac:
+	make -f Makefile.mac
 
-build: clean
-
-clean:
-	/bin/rm -f *.o
+nix:
+	make -f Makefile.nix
