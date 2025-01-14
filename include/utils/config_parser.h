@@ -9,38 +9,33 @@
 #define CONFIG_FILE_PATH "config.yaml"
 #endif
 
-typedef struct {
-  int register_file_length;
-  int register_file_width;
-  int pipeline_stages;
-} cpu_config;
+#define CONFIG_MAP_SIZE 100
+#define CONFIG_MAX_KEY_SIZE 256
+#define CONFIG_MAX_VALUE_SIZE 256
 
 typedef struct {
-  int l1_icache_size;
-  int l1_dcache_size;
-  int l2_cache_size;
-  int dram_size;
-} mem_config;
+  char key[CONFIG_MAX_KEY_SIZE];
+  char value[CONFIG_MAX_VALUE_SIZE];
+} hash_entry;
 
 typedef struct {
-  int cache_misses;
-  int branch_mispredictions;
-  int memory_heatmap;
-  int register_heatmap;
-} stats_config;
+  hash_entry table[CONFIG_MAP_SIZE];
+  int slot_used[CONFIG_MAP_SIZE];
+} hash_map;
 
 typedef enum { INFO, DEBUG, WARN, ERROR } verbosity_levels;
 
 typedef struct {
-  verbosity_levels verbosity_level;
-} logs_config;
-
-typedef struct {
-  cpu_config cpu_conf;
-  mem_config mem_conf;
-  stats_config stat_conf;
-  logs_config log_conf;
+  hash_map cpu_conf;
+  hash_map mem_conf;
+  hash_map stat_conf;
+  hash_map log_conf;
 } configs;
+
+unsigned int _hash_function(const char *str);
+int _hash_map_set(hash_map *map, const char *key, const char *value);
+const char *_hash_map_get(hash_map *map, const char *key);
+void _hash_map_init(hash_map *map);
 
 configs *parse_configs();
 

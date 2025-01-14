@@ -2,6 +2,72 @@
 
 configs parsed_configs;
 
+hash_map cpu_config_hash_map;
+hash_map mem_config_hash_map;
+hash_map stats_config_hash_map;
+hash_map logs_config_hash_map;
+
+unsigned int _hash_function(const char *str) {
+  unsigned int hash = 5381;
+  int c;
+  while ((c = *str++))
+    hash = ((hash << 5) + hash) + c; // hash * 33 + c
+  return hash % CONFIG_MAP_SIZE;
+}
+
+int _hash_map_set(hash_map *map, const char *key, const char *value) {
+  unsigned int index = _hash_function(key);
+
+  while (map->slot_used[index]) {
+    if (strncmp(map->table[index].key, key, strlen(key)) == 0) {
+      strcpy(map->table[index].value, value);
+      return 1;
+    }
+    index = (index + 1) % CONFIG_MAP_SIZE;
+  }
+
+  strcpy(map->table[index].key, key);
+  strcpy(map->table[index].value, value);
+  map->slot_used[index] = 1;
+
+  return 0;
+}
+
+const char *_hash_map_get(hash_map *map, const char *key) {
+  unsigned int index = _hash_function(key);
+
+  while (map->slot_used[index]) {
+    if (strcmp(map->table[index].key, key) == 0) {
+      return map->table[index].value;
+    }
+    index = (index + 1) % CONFIG_MAP_SIZE;
+  }
+
+  return NULL;
+}
+
+void _hash_map_init(hash_map *map) {
+  for (int i = 0; i < CONFIG_MAP_SIZE; i++)
+    map->slot_used[i] = 0;
+
+  int init_status = 0;
+  _hash_map_set(&cpu_config_hash_map, "register_file_length", "32");
+  _hash_map_set(&cpu_config_hash_map, "register_file_width", "32");
+  _hash_map_set(&cpu_config_hash_map, "pipeline_stages", "5");
+
+  _hash_map_set(&mem_config_hash_map, "l1_icache_size", "128");
+  _hash_map_set(&mem_config_hash_map, "l1_dcache_size", "128");
+  _hash_map_set(&mem_config_hash_map, "l2_cache_size", "1024");
+  _hash_map_set(&mem_config_hash_map, "dram_size", "4096");
+
+  _hash_map_set(&stats_config_hash_map, "cache_misses", "1");
+  _hash_map_set(&stats_config_hash_map, "branch_mispredictions", "1");
+  _hash_map_set(&stats_config_hash_map, "memory_heatmap", "0");
+  _hash_map_set(&stats_config_hash_map, "register_heatmap", "0");
+
+  _hash_map_set(&logs_config_hash_map, "verbosity_level", "3");
+}
+
 configs *parse_configs() {
   yaml_parser_t parser;
   yaml_token_t token;
@@ -20,11 +86,6 @@ configs *parse_configs() {
 
   char *block_name;
   char *key_name;
-
-  cpu_config cpu_parsed;
-  mem_config mem_parsed;
-  stats_config stats_parsed;
-  logs_config logs_parsed;
 
   do {
     yaml_parser_scan(&parser, &token);
@@ -68,48 +129,16 @@ configs *parse_configs() {
           key_name = strdup((char *)token.data.scalar.value);
 
         else {
-          int value = atoi(((char *)token.data.scalar.value));
-
+          char *value = (char *)token.data.scalar.value;
           if (strncmp(block_name, "cpu", strlen("cpu")) == 0) {
-            if (strncmp(key_name, "register_file_length",
-                        strlen("register_file_length")) == 0) {
-              cpu_parsed.register_file_length = value;
-            } else if (strncmp(key_name, "register_file_width",
-                               strlen("register_file_width")) == 0)
-              cpu_parsed.register_file_width = value;
-            else if (strncmp(key_name, "pipeline_stages",
-                             strlen("pipeline_stages")) == 0)
-              cpu_parsed.pipeline_stages = value;
+            _hash_map_set(&cpu_config_hash_map, key_name, value);
           } else if (strncmp(block_name, "memory", strlen("memory")) == 0) {
-            if (strncmp(key_name, "l1_icache_size", strlen("l1_icache_size")) ==
-                0)
-              mem_parsed.l1_icache_size = value;
-            else if (strncmp(key_name, "l1_dcache_size",
-                             strlen("l1_dcache_size")) == 0)
-              mem_parsed.l1_dcache_size = value;
-            else if (strncmp(key_name, "l2_cache_size",
-                             strlen("l2_cache_size")) == 0)
-              mem_parsed.l2_cache_size = value;
-            else if (strncmp(key_name, "dram_size", strlen("dram_size")) == 0)
-              mem_parsed.dram_size = value;
+            _hash_map_set(&mem_config_hash_map, key_name, value);
           } else if (strncmp(block_name, "enable_stats",
                              strlen("enable_stats")) == 0) {
-            if (strncmp(key_name, "cache_misses", strlen("cache_misses")) == 0)
-              stats_parsed.cache_misses = value;
-            else if (strncmp(key_name, "branch_mispredictions",
-                             strlen("branch_mispredictions")) == 0)
-              stats_parsed.branch_mispredictions = value;
-            else if (strncmp(key_name, "memory_heatmap",
-                             strlen("memory_heatmap")) == 0)
-              stats_parsed.memory_heatmap = value;
-            else if (strncmp(key_name, "register_heatmap",
-                             strlen("register_heatmap")) == 0)
-              stats_parsed.register_heatmap = value;
+            _hash_map_set(&stats_config_hash_map, key_name, value);
           } else if (strncmp(block_name, "logs", strlen("logs")) == 0) {
-            if (strncmp(key_name, "verbosity_level",
-                        strlen("verbosity_level")) == 0) {
-              logs_parsed.verbosity_level = value;
-            }
+            _hash_map_set(&logs_config_hash_map, key_name, value);
           }
         }
       }
@@ -128,10 +157,10 @@ configs *parse_configs() {
   free(block_name);
   free(key_name);
 
-  parsed_configs.cpu_conf = cpu_parsed;
-  parsed_configs.mem_conf = mem_parsed;
-  parsed_configs.stat_conf = stats_parsed;
-  parsed_configs.log_conf = logs_parsed;
+  parsed_configs.cpu_conf = cpu_config_hash_map;
+  parsed_configs.mem_conf = mem_config_hash_map;
+  parsed_configs.stat_conf = stats_config_hash_map;
+  parsed_configs.log_conf = logs_config_hash_map;
 
   return &parsed_configs;
 }
