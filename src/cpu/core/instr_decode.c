@@ -414,77 +414,70 @@ alu_data decode_instr(uint32_t fetched_instr, register_file *reg_file) {
   dec_alu_data.instruction_name = dec_op.instruction;
   dec_alu_data.pc = get_pc_value(reg_file);
 
+  decoded_instr instr = {};
   switch (dec_op.instn_type) {
-  case r_type: {
-    r_instr instr = (r_instr){.opcode = fetched_instr & 0b1111111,
-                              .rd = (fetched_instr >> 7) & 0b11111,
-                              .funct3 = (fetched_instr >> 12) & 0b111,
-                              .rs1 = (fetched_instr >> 15) & 0b11111,
-                              .rs2 = (fetched_instr >> 20) & 0b11111,
-                              .funct7 = fetched_instr >> 25};
+  case r_type:
+    instr.opcode = fetched_instr & 0b1111111;
+    instr.rd = (fetched_instr >> 7) & 0b11111;
+    instr.funct3 = (fetched_instr >> 12) & 0b111;
+    instr.rs1 = (fetched_instr >> 15) & 0b11111;
+    instr.rs2 = (fetched_instr >> 20) & 0b11111;
+    instr.funct7 = fetched_instr >> 25;
+
     dec_alu_data.rs1_data = reg_file_read(reg_file, instr.rs1);
     dec_alu_data.rs2_data = reg_file_read(reg_file, instr.rs2);
     dec_alu_data.rd = instr.rd;
-  } break;
+    break;
 
-  case i_type: {
-    i_instr instr = (i_instr){
-        .opcode = fetched_instr & 0b1111111,
-        .rd = (fetched_instr >> 7) & 0b11111,
-        .funct3 = (fetched_instr >> 12) & 0b111,
-        .rs1 = (fetched_instr >> 15) & 0b11111,
-    };
+  case i_type:
+    instr.opcode = fetched_instr & 0b1111111;
+    instr.rd = (fetched_instr >> 7) & 0b11111;
+    instr.funct3 = (fetched_instr >> 12) & 0b111;
+    instr.rs1 = (fetched_instr >> 15) & 0b11111;
+
     dec_alu_data.rs1_data = reg_file_read(reg_file, instr.rs1);
     dec_alu_data.rd = instr.rd;
     dec_alu_data.sign_ext_imm =
         sign_extend_imm(dec_op.instn_type, fetched_instr);
-  } break;
+    break;
 
-  case s_type: {
-    s_instr instr = (s_instr){
-        .opcode = fetched_instr & 0b1111111,
-        .funct3 = (fetched_instr >> 12) & 0b111,
-        .rs1 = (fetched_instr >> 15) & 0b11111,
-        .rs2 = (fetched_instr >> 20) & 0b11111,
-    };
+  case s_type:
+    instr.opcode = fetched_instr & 0b1111111;
+    instr.funct3 = (fetched_instr >> 12) & 0b111;
+    instr.rs1 = (fetched_instr >> 15) & 0b11111;
+    instr.rs2 = (fetched_instr >> 20) & 0b11111;
     dec_alu_data.rs1_data = reg_file_read(reg_file, instr.rs1);
     dec_alu_data.rs2_data = reg_file_read(reg_file, instr.rs2);
     dec_alu_data.sign_ext_imm =
         sign_extend_imm(dec_op.instn_type, fetched_instr);
-  } break;
+    break;
 
-  case u_type: {
-    u_instr instr = (u_instr){
-        .opcode = fetched_instr & 0b1111111,
-        .rd = (fetched_instr >> 7) & 0b11111,
-    };
+  case u_type:
+    instr.opcode = fetched_instr & 0b1111111;
+    instr.rd = (fetched_instr >> 7) & 0b11111;
     dec_alu_data.rd = instr.rd;
     dec_alu_data.sign_ext_imm =
         sign_extend_imm(dec_op.instn_type, fetched_instr);
-  } break;
+    break;
 
-  case b_type: {
-    b_instr instr = (b_instr){
-        .opcode = fetched_instr & 0b1111111,
-        .funct3 = (fetched_instr >> 12) & 0b111,
-        .rs1 = (fetched_instr >> 15) & 0b11111,
-        .rs2 = (fetched_instr >> 20) & 0b11111,
-    };
+  case b_type:
+    instr.opcode = fetched_instr & 0b1111111;
+    instr.funct3 = (fetched_instr >> 12) & 0b111;
+    instr.rs1 = (fetched_instr >> 15) & 0b11111;
+    instr.rs2 = (fetched_instr >> 20) & 0b11111,
     dec_alu_data.rs1_data = reg_file_read(reg_file, instr.rs1);
     dec_alu_data.rs2_data = reg_file_read(reg_file, instr.rs2);
     dec_alu_data.sign_ext_imm =
         sign_extend_imm(dec_op.instn_type, fetched_instr);
-  } break;
+    break;
 
-  case j_type: {
-    j_instr instr = (j_instr){
-        .opcode = fetched_instr & 0b1111111,
-        .rd = (fetched_instr >> 7) & 0b11111,
-    };
+  case j_type:
+    instr.opcode = fetched_instr & 0b1111111;
+    instr.rd = (fetched_instr >> 7) & 0b11111;
     dec_alu_data.rd = instr.rd;
     dec_alu_data.sign_ext_imm =
         sign_extend_imm(dec_op.instn_type, fetched_instr);
-  } break;
+    break;
 
   default:
     printf("instr_decode: invalid instruction type\n");

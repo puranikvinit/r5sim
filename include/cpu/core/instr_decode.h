@@ -10,38 +10,7 @@ typedef struct {
   uint8_t rs1 : 5;
   uint8_t rs2 : 5;
   uint8_t funct7 : 7;
-} r_instr;
-
-typedef struct {
-  uint8_t opcode : 7;
-  uint8_t rd : 5;
-  uint8_t funct3 : 3;
-  uint8_t rs1 : 5;
-} i_instr;
-
-typedef struct {
-  uint8_t opcode : 7;
-  uint8_t funct3 : 3;
-  uint8_t rs1 : 5;
-  uint8_t rs2 : 5;
-} s_instr;
-
-typedef struct {
-  uint8_t opcode : 7;
-  uint8_t rd : 5;
-} u_instr;
-
-typedef struct {
-  uint8_t opcode : 7;
-  uint8_t rs1 : 5;
-  uint8_t rs2 : 5;
-  uint8_t funct3 : 3;
-} b_instr;
-
-typedef struct {
-  uint8_t opcode : 7;
-  uint8_t rd : 5;
-} j_instr;
+} decoded_instr;
 
 typedef enum {
   r_type,
