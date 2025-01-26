@@ -407,12 +407,12 @@ decoded_opcode __decode_opcode(uint32_t fetched_instr) {
   return dec_op;
 }
 
-alu_data decode_instr(uint32_t fetched_instr, register_file *reg_file) {
-  alu_data dec_alu_data;
+exec_data decode_instr(uint32_t fetched_instr, register_file *reg_file) {
+  exec_data dec_exec_data;
 
   decoded_opcode dec_op = __decode_opcode(fetched_instr);
-  dec_alu_data.instruction_name = dec_op.instruction;
-  dec_alu_data.pc = get_pc_value(reg_file);
+  dec_exec_data.instruction_name = dec_op.instruction;
+  dec_exec_data.pc = get_pc_value(reg_file);
 
   decoded_instr instr = {};
   switch (dec_op.instn_type) {
@@ -424,9 +424,9 @@ alu_data decode_instr(uint32_t fetched_instr, register_file *reg_file) {
     instr.rs2 = (fetched_instr >> 20) & 0b11111;
     instr.funct7 = fetched_instr >> 25;
 
-    dec_alu_data.rs1_data = reg_file_read(reg_file, instr.rs1);
-    dec_alu_data.rs2_data = reg_file_read(reg_file, instr.rs2);
-    dec_alu_data.rd = instr.rd;
+    dec_exec_data.rs1_data = reg_file_read(reg_file, instr.rs1);
+    dec_exec_data.rs2_data = reg_file_read(reg_file, instr.rs2);
+    dec_exec_data.rd = instr.rd;
     break;
 
   case i_type:
@@ -435,9 +435,9 @@ alu_data decode_instr(uint32_t fetched_instr, register_file *reg_file) {
     instr.funct3 = (fetched_instr >> 12) & 0b111;
     instr.rs1 = (fetched_instr >> 15) & 0b11111;
 
-    dec_alu_data.rs1_data = reg_file_read(reg_file, instr.rs1);
-    dec_alu_data.rd = instr.rd;
-    dec_alu_data.sign_ext_imm =
+    dec_exec_data.rs1_data = reg_file_read(reg_file, instr.rs1);
+    dec_exec_data.rd = instr.rd;
+    dec_exec_data.sign_ext_imm =
         sign_extend_imm(dec_op.instn_type, fetched_instr);
     break;
 
@@ -446,17 +446,17 @@ alu_data decode_instr(uint32_t fetched_instr, register_file *reg_file) {
     instr.funct3 = (fetched_instr >> 12) & 0b111;
     instr.rs1 = (fetched_instr >> 15) & 0b11111;
     instr.rs2 = (fetched_instr >> 20) & 0b11111;
-    dec_alu_data.rs1_data = reg_file_read(reg_file, instr.rs1);
-    dec_alu_data.rs2_data = reg_file_read(reg_file, instr.rs2);
-    dec_alu_data.sign_ext_imm =
+    dec_exec_data.rs1_data = reg_file_read(reg_file, instr.rs1);
+    dec_exec_data.rs2_data = reg_file_read(reg_file, instr.rs2);
+    dec_exec_data.sign_ext_imm =
         sign_extend_imm(dec_op.instn_type, fetched_instr);
     break;
 
   case u_type:
     instr.opcode = fetched_instr & 0b1111111;
     instr.rd = (fetched_instr >> 7) & 0b11111;
-    dec_alu_data.rd = instr.rd;
-    dec_alu_data.sign_ext_imm =
+    dec_exec_data.rd = instr.rd;
+    dec_exec_data.sign_ext_imm =
         sign_extend_imm(dec_op.instn_type, fetched_instr);
     break;
 
@@ -465,17 +465,17 @@ alu_data decode_instr(uint32_t fetched_instr, register_file *reg_file) {
     instr.funct3 = (fetched_instr >> 12) & 0b111;
     instr.rs1 = (fetched_instr >> 15) & 0b11111;
     instr.rs2 = (fetched_instr >> 20) & 0b11111,
-    dec_alu_data.rs1_data = reg_file_read(reg_file, instr.rs1);
-    dec_alu_data.rs2_data = reg_file_read(reg_file, instr.rs2);
-    dec_alu_data.sign_ext_imm =
+    dec_exec_data.rs1_data = reg_file_read(reg_file, instr.rs1);
+    dec_exec_data.rs2_data = reg_file_read(reg_file, instr.rs2);
+    dec_exec_data.sign_ext_imm =
         sign_extend_imm(dec_op.instn_type, fetched_instr);
     break;
 
   case j_type:
     instr.opcode = fetched_instr & 0b1111111;
     instr.rd = (fetched_instr >> 7) & 0b11111;
-    dec_alu_data.rd = instr.rd;
-    dec_alu_data.sign_ext_imm =
+    dec_exec_data.rd = instr.rd;
+    dec_exec_data.sign_ext_imm =
         sign_extend_imm(dec_op.instn_type, fetched_instr);
     break;
 
@@ -484,11 +484,11 @@ alu_data decode_instr(uint32_t fetched_instr, register_file *reg_file) {
     break;
   }
 
-  return dec_alu_data;
+  return dec_exec_data;
 }
 
-uint32_t sign_extend_imm(instr_type instn_type, uint32_t instr) {
-  uint32_t sign_ext_imm = (instr >> 31) ? 0xFFFFFFFF : 0;
+int32_t sign_extend_imm(instr_type instn_type, uint32_t instr) {
+  int32_t sign_ext_imm = (instr >> 31) ? 0xFFFFFFFF : 0;
 
   switch (instn_type) {
   case r_type:

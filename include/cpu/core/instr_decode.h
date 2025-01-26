@@ -84,10 +84,10 @@ typedef struct {
   uint8_t rd;
   uint32_t sign_ext_imm;
   reg_t pc;
-} alu_data;
+} exec_data;
 
-alu_data decode_instr(uint32_t fetched_instr, register_file *reg_file);
+exec_data decode_instr(uint32_t fetched_instr, register_file *reg_file);
 
-uint32_t sign_extend_imm(instr_type instn_type, uint32_t instr);
+int32_t sign_extend_imm(instr_type instn_type, uint32_t instr);
 
 #endif // !DECODE_H
