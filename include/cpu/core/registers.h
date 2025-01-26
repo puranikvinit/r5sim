@@ -5,8 +5,13 @@
 #include <stdio.h>
 
 #define NUM_REGISTERS 32
+#define XLEN 32
 
+#if (XLEN == 32)
 typedef uint32_t reg_t;
+#else
+typedef uint64_t reg_t;
+#endif
 
 // For RV32I base integer set:
 // x0 -> Hard-wired with all bits set to 0

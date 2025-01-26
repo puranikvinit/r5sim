@@ -1,6 +1,4 @@
 cpu:
-  register_file_length: 32
-  register_file_width: 32
   pipeline_stages: 5 # 3,4,5,7
 
 memory:

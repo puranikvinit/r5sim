@@ -51,8 +51,6 @@ void _hash_map_init(hash_map *map) {
     map->slot_used[i] = 0;
 
   int init_status = 0;
-  _hash_map_set(&cpu_config_hash_map, "register_file_length", "32");
-  _hash_map_set(&cpu_config_hash_map, "register_file_width", "32");
   _hash_map_set(&cpu_config_hash_map, "pipeline_stages", "5");
 
   _hash_map_set(&mem_config_hash_map, "l1_icache_size", "128");
