@@ -1,4 +1,11 @@
 cpu:
+  dynamic_scheduling: 0 # 0,1
+  # 1->dynamic scheduling (Tomasulo's algorithm)
+  reservation_stations: 5
+  load_buffers: 10
+  store_buffers: 10
+  rob_size: 10
+  # 0->static scheduling, only corresponding parameters will be used
   pipeline_stages: 5 # 3,4,5,7
 
 memory:
