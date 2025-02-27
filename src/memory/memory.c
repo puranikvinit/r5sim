@@ -25,10 +25,24 @@ void mem_write(memory *mem, addr_t addr, data_t data) {
     }
 }
 
-void print_mem_cell(memory *mem, addr_t addr) {
+void print_mem_byte(memory *mem, addr_t addr) {
     if (addr >= MEM_START && addr < MEM_END) {
         size_t index = addr - MEM_START;
         printf("0x%08x: 0x%08x\n", addr, mem->mem_array[index].data);
+    }
+}
+
+void print_mem_half(memory *mem, addr_t addr) {
+    if (addr >= MEM_START && addr < MEM_END) {
+        size_t index = addr - MEM_START;
+        printf("0x%08x: 0x%04x%04x\n", addr, mem->mem_array[index].data, mem->mem_array[index + 1].data);
+    }
+}
+
+void print_mem_word(memory *mem, addr_t addr) {
+    if (addr >= MEM_START && addr < MEM_END) {
+        size_t index = addr - MEM_START;
+        printf("0x%08x: 0x%02x%02x%02x%02x\n", addr, mem->mem_array[index].data, mem->mem_array[index + 1].data, mem->mem_array[index + 2].data, mem->mem_array[index + 3].data);
     }
 }
 

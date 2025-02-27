@@ -24,7 +24,9 @@ typedef struct {
 memory* get_memory();
 data_t mem_read(memory *mem, addr_t addr);
 void mem_write(memory *mem, addr_t addr, data_t data);
-void print_mem_cell(memory *mem, addr_t addr);
+void print_mem_byte(memory *mem, addr_t addr);
+void print_mem_half(memory *mem, addr_t addr);
+void print_mem_word(memory *mem, addr_t addr);
 void mem_clear(memory *mem);
 void free_memory();
 
