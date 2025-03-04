@@ -21,6 +21,9 @@ int parse_configs() {
     return 1;
   }
 
+  fprintf(config_defines_file, "#ifndef CONFIG_DEFINES_H\n");
+  fprintf(config_defines_file, "#define CONFIG_DEFINES_H\n\n");
+
   if (!yaml_parser_initialize(&parser)) {
     printf("config parser init failed");
     return 2;
@@ -93,8 +96,12 @@ int parse_configs() {
   yaml_token_delete(&token);
 
   yaml_parser_delete(&parser);
+
   fclose(config_file);
+
+  fprintf(config_defines_file, "\n#endif // !CONFIG_DEFINES_H\n");
   fclose(config_defines_file);
+
   free(block_name);
   free(key_name);
 

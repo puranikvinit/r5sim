@@ -1,11 +1,11 @@
 #include "cpu/core/registers.h"
+#include "config_defines.h"
 
 void reg_file_init(register_file *reg_file) {
   reg_file->x0 = 0;
   for (int i = 0; i < NUM_REGISTERS - 2; i++)
     reg_file->x_gpr[i] = 0;
-  reg_file->pc = 0; // TODO: To be replaced with valid start address after
-                    // implementation of ELF parser
+  reg_file->pc = INSTR_START_ADDRESS;
 }
 
 reg_t reg_file_read(register_file *reg_file, int reg_num) {
