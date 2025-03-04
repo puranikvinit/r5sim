@@ -2,26 +2,24 @@
 #define MEMORY_H
 
 #include <stdint.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+
+#include "config_defines.h"
 
 typedef uint32_t data_t;
 typedef uint32_t addr_t;
 
 typedef struct {
-    data_t data;
-    addr_t addr;
+  data_t data;
+  addr_t addr;
 } memory_cell;
 
-#define MEM_SIZE 1024
-#define MEM_START 0x10000000
-#define MEM_END 0x10000000 + MEM_SIZE
+#define DRAM_END_ADDRESS DRAM_START_ADDRESS + DRAM_SIZE
+#define MAX_INSTR_NUM (DRAM_END_ADDRESS - INSTR_START_ADDRESS) / 4
 
-typedef struct {
-    memory_cell mem_array[MEM_SIZE];
-} memory;
+typedef memory_cell memory[DRAM_SIZE];
 
-memory* get_memory();
 data_t mem_read(memory *mem, addr_t addr);
 void mem_write(memory *mem, addr_t addr, data_t data);
 void print_mem_byte(memory *mem, addr_t addr);
@@ -29,5 +27,6 @@ void print_mem_half(memory *mem, addr_t addr);
 void print_mem_word(memory *mem, addr_t addr);
 void mem_clear(memory *mem);
 void free_memory();
+int mem_init();
 
-#endif // MEMORY_H
+#endif // !MEMORY_H

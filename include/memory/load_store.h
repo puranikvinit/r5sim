@@ -1,14 +1,16 @@
 #ifndef LOAD_STORE_H
 #define LOAD_STORE_H
 
-#include "memory/memory.h"
+#include <stdint.h>
+
 #include "cpu/core/registers.h"
+#include "memory/memory.h"
 
 // Memory access exception handling
 typedef enum {
-    MEM_ACCESS_OK,
-    MEM_ACCESS_MISALIGNED,
-    MEM_ACCESS_OUT_OF_BOUNDS
+  MEM_ACCESS_OK,
+  MEM_ACCESS_MISALIGNED,
+  MEM_ACCESS_OUT_OF_BOUNDS
 } mem_access_status;
 
 // Function to check memory access validity
@@ -24,7 +26,8 @@ mem_access_status load_word(memory *mem, addr_t addr, reg_t *result);
 // Load byte unsigned - lbu instruction
 mem_access_status load_byte_unsigned(memory *mem, addr_t addr, reg_t *result);
 // Load halfword unsigned - lhu instruction
-mem_access_status load_halfword_unsigned(memory *mem, addr_t addr, reg_t *result);
+mem_access_status load_halfword_unsigned(memory *mem, addr_t addr,
+                                         reg_t *result);
 
 // Store operations - now return status
 // Store byte - sb instruction
