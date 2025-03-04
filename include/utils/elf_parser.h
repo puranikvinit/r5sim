@@ -20,7 +20,12 @@
  *
  * @param elf_file_path Path to the input ELF file
  * @param output_file_path Path to the output text file
+ *
+ * @return 0 on success, non-zero on failure
+ * 1: file open/read failure
+ * 2: invalid ELF file
+ * 3: memory allocation failure
  */
-void extract_instructions(const char *elf_file_path);
+int extract_instructions(const char *elf_file_path);
 
 #endif //! PARSER_H

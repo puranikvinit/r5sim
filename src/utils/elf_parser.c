@@ -1,10 +1,10 @@
 #include "utils/elf_parser.h"
 
-void extract_instructions(const char *elf_file_path) {
+int extract_instructions(const char *elf_file_path) {
   FILE *elf_file = fopen(elf_file_path, "rb");
   if (!elf_file) {
     perror("Failed to open ELF file");
-    return;
+    return 1;
   }
 
   Elf32_Ehdr elf_header;
@@ -13,7 +13,7 @@ void extract_instructions(const char *elf_file_path) {
   if (memcmp(elf_header.e_ident, ELFMAG, SELFMAG) != 0) {
     fprintf(stderr, "Not a valid ELF file.\n");
     fclose(elf_file);
-    return;
+    return 2;
   }
 
   fseek(elf_file, elf_header.e_shoff, SEEK_SET);
@@ -24,7 +24,7 @@ void extract_instructions(const char *elf_file_path) {
   if (!output_file) {
     perror("Failed to open output file");
     fclose(elf_file);
-    return;
+    return 1;
   }
 
   for (int i = 0; i < elf_header.e_shnum; i++) {
@@ -36,7 +36,7 @@ void extract_instructions(const char *elf_file_path) {
         perror("Memory allocation failed");
         fclose(output_file);
         fclose(elf_file);
-        return;
+        return 3;
       }
       fread(instructions, section_headers[i].sh_size, 1, elf_file);
 
@@ -54,4 +54,6 @@ void extract_instructions(const char *elf_file_path) {
 
   fclose(output_file);
   fclose(elf_file);
+
+  return 0;
 }
