@@ -1,10 +1,11 @@
 cpu:
   dynamic_scheduling: 0 # 0,1
   # 1->dynamic scheduling (Tomasulo's algorithm)
-  reservation_stations: 5
+  alu_reservation_stations: 5
+  ls_reservation_stations: 5
   load_buffers: 10
   store_buffers: 10
-  rob_size: 10
+  rob_size: 10 # Maximum Value = 2^8-1 = 255
   # 0->static scheduling, only corresponding parameters will be used
   pipeline_stages: 5 # 3,4,5,7
 
@@ -12,7 +13,9 @@ memory:
   l1_icache_size: 128 # in KiB
   l1_dcache_size: 128 # in KiB
   l2_cache_size: 1024 # in KiB
-  dram_size: 4096 # in MiB
+  dram_size: 1024 # in MiB (Max 4GiB = 4096MiB)
+  dram_start_address: 0x00000000
+  instr_start_address: 0x08000000
 
 enable_stats:
   cache_misses: 1 # 0,1
