@@ -64,14 +64,23 @@ int mem_init() {
   // LOAD INSTRUCTIONS INTO MEMORY
   FILE *instr_file = fopen(OUTPUT_FILE_PATH, "r");
   if (!instr_file) {
-    perror("Failed to open instructions file");
+    printf("instruction file open failed\n");
     return 1;
   }
 
   int num_instr = 0;
-  // while (num_instr < MAX_INSTR_NUM &&
-  //        fscanf(instr_file, "0x%lx: 0x%x", ,
-  //               &entries[count].data) == 2) {
-  //   count++;
-  // }
+  instr_t instr;
+  addr_t mem_addr;
+  while (num_instr < MAX_INSTR_NUM &&
+         fscanf(instr_file, "0x%x: 0x%x", &mem_addr, &instr) == 2) {
+    mem_write(mem, mem_addr, (instr & 0x000000FF));
+    mem_write(mem, mem_addr + 1, (instr & 0x0000FF00) >> 8);
+    mem_write(mem, mem_addr + 2, (instr & 0x00FF0000) >> 16);
+    mem_write(mem, mem_addr + 3, (instr & 0xFF000000) >> 24);
+    num_instr++;
+  }
+
+  fclose(instr_file);
+
+  return 0;
 }

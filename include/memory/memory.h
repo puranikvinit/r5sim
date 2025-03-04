@@ -7,8 +7,9 @@
 
 #include "config_defines.h"
 
-typedef uint32_t data_t;
+typedef uint8_t data_t;
 typedef uint32_t addr_t;
+typedef uint32_t instr_t;
 
 typedef struct {
   data_t data;
@@ -27,6 +28,9 @@ void print_mem_half(memory *mem, addr_t addr);
 void print_mem_word(memory *mem, addr_t addr);
 void mem_clear(memory *mem);
 void free_memory();
+
+// 0: success
+// 1: file open/read failed
 int mem_init();
 
 #endif // !MEMORY_H
