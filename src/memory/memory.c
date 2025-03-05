@@ -1,50 +1,50 @@
 #include "memory/memory.h"
 #include "utils/elf_parser.h"
 
-static memory *mem = NULL;
+memory *mem = NULL;
 
 data_t mem_read(memory *mem, addr_t addr) {
-  if (addr >= DRAM_START_ADDRESS && addr < DRAM_END_ADDRESS) {
+  if (addr < DRAM_END_ADDRESS && addr >= DRAM_START_ADDRESS) {
     size_t index = addr - DRAM_START_ADDRESS;
-    return mem[index]->data;
+    return mem->data[index];
   }
   return 0;
 }
 
 void mem_write(memory *mem, addr_t addr, data_t data) {
-  if (addr >= DRAM_START_ADDRESS && addr < DRAM_END_ADDRESS) {
+  if (addr < DRAM_END_ADDRESS && addr >= DRAM_START_ADDRESS) {
     size_t index = addr - DRAM_START_ADDRESS;
-    mem[index]->data = data;
+    mem->data[index] = data;
   }
 }
 
 void print_mem_byte(memory *mem, addr_t addr) {
-  if (addr >= DRAM_START_ADDRESS && addr < DRAM_END_ADDRESS) {
+  if (addr < DRAM_END_ADDRESS && addr >= DRAM_START_ADDRESS) {
     size_t index = addr - DRAM_START_ADDRESS;
-    printf("0x%08x: 0x%08x\n", addr, mem[index]->data);
+    printf("0x%08x: 0x%08x\n", addr, mem->data[index]);
   }
 }
 
 void print_mem_half(memory *mem, addr_t addr) {
-  if (addr >= DRAM_START_ADDRESS && addr < DRAM_END_ADDRESS) {
+  if (addr < DRAM_END_ADDRESS && addr >= DRAM_START_ADDRESS) {
     size_t index = addr - DRAM_START_ADDRESS;
-    printf("0x%08x: 0x%04x%04x\n", addr, mem[index]->data,
-           mem[index + 1]->data);
+    printf("0x%08x: 0x%04x%04x\n", addr, mem->data[index],
+           mem->data[index + 1]);
   }
 }
 
 void print_mem_word(memory *mem, addr_t addr) {
-  if (addr >= DRAM_START_ADDRESS && addr < DRAM_END_ADDRESS) {
+  if (addr < DRAM_END_ADDRESS && addr >= DRAM_START_ADDRESS) {
     size_t index = addr - DRAM_START_ADDRESS;
-    printf("0x%08x: 0x%02x%02x%02x%02x\n", addr, mem[index]->data,
-           mem[index + 1]->data, mem[index + 2]->data, mem[index + 3]->data);
+    printf("0x%08x: 0x%02x%02x%02x%02x\n", addr, mem->data[index],
+           mem->data[index + 1], mem->data[index + 2], mem->data[index + 3]);
   }
 }
 
 void mem_clear(memory *mem) {
   for (size_t i = 0; i < DRAM_SIZE; i++) {
-    mem[i]->data = 0;
-    mem[i]->addr = DRAM_START_ADDRESS + i;
+    mem->data[i] = 0;
+    mem->addr[i] = DRAM_START_ADDRESS + i;
   }
 }
 
@@ -58,6 +58,9 @@ void free_memory() {
 int mem_init() {
   if (mem == NULL) {
     mem = (memory *)malloc(sizeof(memory));
+    if (mem == NULL) {
+      return 1;
+    }
     mem_clear(mem);
   }
 
@@ -68,11 +71,12 @@ int mem_init() {
     return 1;
   }
 
-  int num_instr = 0;
+  uint64_t num_instr = 0;
   instr_t instr;
   addr_t mem_addr;
   while (num_instr < MAX_INSTR_NUM &&
-         fscanf(instr_file, "0x%x: 0x%x", &mem_addr, &instr) == 2) {
+         fscanf(instr_file, "0x%x: 0x%x\n", &mem_addr, &instr) == 2) {
+    // printf("0x%x: 0x%x\n", mem_addr, instr);
     mem_write(mem, mem_addr, (instr & 0x000000FF));
     mem_write(mem, mem_addr + 1, (instr & 0x0000FF00) >> 8);
     mem_write(mem, mem_addr + 2, (instr & 0x00FF0000) >> 16);

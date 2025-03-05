@@ -12,14 +12,12 @@ typedef uint32_t addr_t;
 typedef uint32_t instr_t;
 
 typedef struct {
-  data_t data;
-  addr_t addr;
-} memory_cell;
+  data_t data[DRAM_SIZE * 0x100000];
+  addr_t addr[DRAM_SIZE * 0x100000];
+} memory;
 
-#define DRAM_END_ADDRESS DRAM_START_ADDRESS + DRAM_SIZE
-#define MAX_INSTR_NUM (DRAM_END_ADDRESS - INSTR_START_ADDRESS) / 4
-
-typedef memory_cell memory[DRAM_SIZE];
+#define DRAM_END_ADDRESS (DRAM_START_ADDRESS + DRAM_SIZE * 0x100000)
+#define MAX_INSTR_NUM ((DRAM_END_ADDRESS - INSTR_START_ADDRESS) / 4)
 
 data_t mem_read(memory *mem, addr_t addr);
 void mem_write(memory *mem, addr_t addr, data_t data);

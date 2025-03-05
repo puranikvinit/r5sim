@@ -1,11 +1,10 @@
 # Compiler settings
 CC = gcc
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -DOUTPUT_FILE_PATH=\"instructions.txt\" -Wno-type-limits
 
 # Source files
 TEST_SRC = test_memory.c
 MEMORY_SRC = ../../src/memory/memory.c
-LOAD_STORE_SRC = ../../src/memory/load_store.c
 
 # Include directories
 INCLUDES = -I. \
@@ -23,10 +22,10 @@ $(TARGET): $(TEST_SRC) $(MEMORY_SRC) $(LOAD_STORE_SRC)
 
 # Clean target
 clean:
-	rm -f $(TARGET)
+	rm -f $(TARGET) instructions.hex
 
-# complile and run
+# compile and run
 test: $(TARGET)
 	./$(TARGET)
 
-.PHONY: all clean
+.PHONY: all clean test
