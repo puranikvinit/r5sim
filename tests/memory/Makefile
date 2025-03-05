@@ -22,7 +22,7 @@ $(TARGET): $(TEST_SRC) $(MEMORY_SRC) $(LOAD_STORE_SRC)
 
 # Clean target
 clean:
-	rm -f $(TARGET) instructions.hex
+	rm -f $(TARGET) instructions.txt
 
 # compile and run
 test: $(TARGET)

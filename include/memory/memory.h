@@ -7,7 +7,7 @@
 
 #include "config_defines.h"
 
-typedef uint8_t data_t;
+typedef uint32_t data_t;
 typedef uint32_t addr_t;
 typedef uint32_t instr_t;
 
